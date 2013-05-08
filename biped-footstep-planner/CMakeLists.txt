@@ -42,7 +42,9 @@ else (APPLE)
 endif (APPLE)
 endmacro(add_gui_app)
 
-add_library(bplanner src/biped.cpp src/biped_checker.cpp src/bipedSearch.cpp)
+add_library(bplanner src/biped.cpp src/biped_checker.cpp src/bipedSearch.cpp src/pathplanner.cpp)
+
+#add_library(pathplanner src/pathplanner.cpp)
 
 add_executable(bipedPlan src/bipedPlan.cpp)
 target_link_libraries(bipedPlan bplanner ${PNG_LIBRARY})

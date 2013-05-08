@@ -1,4 +1,5 @@
 #include "bipedSearch.h"
+#include "pathplanner.h"
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
@@ -46,6 +47,9 @@ bool show_help = false;
 
 GLUquadric* quadric = 0;
 
+PathPlanner planner;
+vector<biped*> bipedTrajectory;
+
 enum MouseAction {
   MouseNone,
   MouseGoal,
@@ -81,6 +85,43 @@ bool valid(const vec2i& p) {
            grid(p.x(), p.y()) );
 }
 
+void getInputSegments(){
+    SegmentList segments;
+    segments.push_back(Line(20, 5, 20, 25)); //TODO: real input
+    segments.push_back(Line(20, 25, 40, 25)); 
+    segments.push_back(Line(40, 25, 40, 5)); 
+    segments.push_back(Line(40, 5, 20, 5)); 
+    planner = PathPlanner(segments);
+    planner.populateTrajectory();
+    StateTrajectory* traj = planner.getPathTrajectory();
+    for (int i = 0; i < traj->size(); i++){
+        cout << traj->at(i).toString() << endl;
+    }
+}
+
+//Function to search a trajectory of states
+void searchTrajectory(){
+    StateTrajectory* stateTraj = planner.getPathTrajectory();
+    //RobotSegment curstate = RobotSegment(init.x(), init.y(), initTheta, Line(0, 0, 0, 0));
+    RobotSegment curstate = stateTraj->back();
+    stateTraj->pop_back();
+    while(stateTraj->size() != 0){
+    
+        RobotSegment goalstate = stateTraj->back();
+        checker = new BipedChecker(&grid, goalstate.robot_pos[0],
+                                  goalstate.robot_pos[1], inflate_h, inflate_z);
+        cout << "Moving from " << curstate.toString() << " to " << goalstate.toString() <<endl ;
+        biped* output = helper.search(curstate.robot_pos[0], curstate.robot_pos[1],
+                               curstate.theta, goalstate.robot_pos[0],
+                               goalstate.robot_pos[1], 3, goalstate.theta,
+                               checker, maxDepth, viewDepth); //hardcoded r? TODO: fix
+        bipedTrajectory.push_back(output);
+        curstate = goalstate;
+        stateTraj->pop_back();
+    }
+}
+
+
 void updateSearch() { 
 
   if (!valid(init) || !valid(goal)) { 
@@ -97,10 +138,13 @@ void updateSearch() {
   helper.clear();
 
   double start = gettimeasdouble();
-
-  searchResult = helper.search(init.x(), init.y(), initTheta,
+  
+  bipedTrajectory.clear();
+  searchTrajectory();
+    
+  /*searchResult = helper.search(init.x(), init.y(), initTheta,
                                goal.x(), goal.y(), goalr, 0, // TODO: don't hardcode
-                               checker, maxDepth, viewDepth);
+                               checker, maxDepth, viewDepth);*/
 
   planTime = gettimeasdouble() - start;
 
@@ -199,8 +243,11 @@ void display() {
     gluDisk(quadric, 0, goalr, 32, 1);
     glPopMatrix();
   }
-
-  draw(searchResult, true);
+  
+  for(int i = 0; i < bipedTrajectory.size(); i++){
+    draw(bipedTrajectory[i], true);
+  }
+  //draw(searchResult, true);
 
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
@@ -467,6 +514,8 @@ void usage(int code) {
 }
 
 int main(int argc, char** argv) {
+  
+  getInputSegments(); //initialize the path planner
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGB);
@@ -513,6 +562,7 @@ int main(int argc, char** argv) {
 
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+  searchTrajectory();
   glutMainLoop();
 
   return 0;
