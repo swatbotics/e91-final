@@ -200,26 +200,31 @@ void BipedChecker::getSuccessors(biped* initial, vector<biped*>& successors){
     return;
   }
   successors.clear();
-  float dy = -4; // y distance between left and right foot
-  if (initial->ft == LEFT) {dy = -dy;}
+    //float dy = -4; // y distance between left and right foot
+  float dy[14] = {-4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -6, -5};
+  if (initial->ft == LEFT) {
+  	for (int i=0; i<14; i++) {
+  		dy[i] = -1 * dy[i];
+  	}  
+  }
   //float dx[9] = {0,0,0,1,1,1,3,3,3}; // x distance, positive is forward
   //float dq[9] = {-PI/4,0,PI/4,-PI/4,0,PI/4,-PI/4,0,PI/4}; // angle change
   //float dx[9] = {0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4};
   //float dx[9] = {0, 0, 0, 1, 1, 1, 4.5, 4.5, 4.5 };
-  float dx[12] = {2, 2, 2, 1, 1, 1, 1.5, 1.5, 1.5, .5, .5, .5 };
-  float dq[12] = {PI/12,0,PI/8,PI/12,0,PI/8,PI/12,0,PI/8, PI/12, 0, PI/8};
+  float dx[14] = {4, 4, 4, 2, 2, 2, 3, 3, 3, 1, 1, 1, 0, 0};
+  float dq[14] = {PI/12,0,PI/8,PI/12,0,PI/8,PI/12,0,PI/8, PI/12, 0, PI/8, 0, 0};
   float stair[3] = {0,10,40}; // Cost of going up stairs.
   //float cost[9] = {2,2,2,2.5,2,2.5,2.5,2,2.5};
-  float cost[12] = {2, 2, 2, 1, 1, 1, 1.5, 1.5, 1.5, .5, .5, .5};
+  float cost[14] = {2, 2, 2, 1, 1, 1, 1.5, 1.5, 1.5, 1, 1, 1, 2, 1};
   int steps = 3;
   biped* next = NULL;
   biped* inter;
   biped* prev;
   float newx, newy, newq;
   int height, height1, height2;
-  for (int i=0; i<12; i++){ // Go through each move
-    newx = initial->x + cos(initial->theta)*dx[i] - sin(initial->theta)*dy;
-    newy = initial->y + sin(initial->theta)*dx[i] + cos(initial->theta)*dy;
+  for (int i=0; i<14; i++){ // Go through each move
+    newx = initial->x + cos(initial->theta)*dx[i] - sin(initial->theta)*dy[i];
+    newy = initial->y + sin(initial->theta)*dx[i] + cos(initial->theta)*dy[i];
     newq = initial->theta + dq[i]*(initial->ft == LEFT ? -1 : 1);
     next = new biped(newx, newy, newq, (initial->ft == LEFT) ? RIGHT:LEFT);
     if (!checkStep(next)) {continue;}
