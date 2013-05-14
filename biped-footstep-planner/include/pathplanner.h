@@ -25,7 +25,7 @@ typedef Eigen::aligned_allocator<Vector6d> stateAllocator;
 
 const Point2d safety = Point2d(-5, -5);
 const float epsilon = 0.05;
-const float default_radius = 40;
+const float default_radius = 20;
 const float delta = default_radius*0.8;
 const float centerx = 0;
 const float centery = 0;

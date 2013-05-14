@@ -137,7 +137,8 @@ Point2d PathPlanner::getPenPosfromCOM(Point2d com) const{
 
 //helper function to give angle of line
 float lineAngle(Line line){
-    Point2d difference = line.p2 - line.p1;
+    //Point2d difference = line.p2 - line.p1;
+    Point2d difference = line.p1 - line.p2;
     return atan2(difference[1], difference[0]);
 }
 
