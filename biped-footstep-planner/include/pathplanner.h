@@ -23,9 +23,9 @@ typedef Eigen::aligned_allocator<Eigen::Vector4d> lineAllocator;
 //typedef Eigen::aligned_allocator<Eigen::Vector4d> stateAllocator;
 typedef Eigen::aligned_allocator<Vector6d> stateAllocator;
 
-const Point2d safety = Point2d(-0.02, -0.02);
+const Point2d safety = Point2d(-5, -5);
 const float epsilon = 0.05;
-const float default_radius = 50;
+const float default_radius = 40;
 const float delta = default_radius*0.8;
 const float centerx = 0;
 const float centery = 0;
@@ -148,7 +148,7 @@ private:
     void pushDrawStates(const Line draw_path);
     Line cutSegment(const Line segment);
     bool isLineWithinWorkspace(Line segment) const;
-    bool cutSegmentOld(const Line cur_seg, Line& output, const Point2d curpos);
+    //bool cutSegmentOld(const Line cur_seg, Line& output, const Point2d curpos);
                         /*get slice of input based on size of workspace*/
     Point2d findFarthestReachablePoint(Point2d origin, Line cur_seg) const;
     

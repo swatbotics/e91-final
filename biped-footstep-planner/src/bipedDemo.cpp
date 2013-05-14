@@ -48,6 +48,7 @@ bool show_help = false;
 GLUquadric* quadric = 0;
 
 PathPlanner planner;
+StateTrajectory* stateTraj;
 vector<biped*> bipedTrajectory;
 SegmentList segments;
 
@@ -87,10 +88,12 @@ bool valid(const vec2i& p) {
 }
 
 void getInputSegments(){
+    /*segments.push_back(Line(20, 45, 60, 45)); 
     segments.push_back(Line(20, 5, 20, 45)); //TODO: real input
-    segments.push_back(Line(20, 45, 60, 45)); 
-    segments.push_back(Line(60, 45, 60, 5));
     segments.push_back(Line(60, 5, 20, 5)); 
+    segments.push_back(Line(60, 45, 60, 5));*/
+    segments.push_back(Line(20, 5, 40, 63));
+    
     planner = PathPlanner(segments);
     planner.populateTrajectory();
     StateTrajectory* traj = planner.getPathTrajectory();
@@ -101,13 +104,12 @@ void getInputSegments(){
 
 //Function to search a trajectory of states
 void searchTrajectory(){
-    StateTrajectory* stateTraj = planner.getPathTrajectory();
+    stateTraj = planner.getPathTrajectory();
     //RobotSegment curstate = RobotSegment(init.x(), init.y(), initTheta, Line(0, 0, 0, 0));
     RobotSegment curstate = stateTraj->back();
-    stateTraj->pop_back();
-    while(stateTraj->size() != 0){
-    
-        RobotSegment goalstate = stateTraj->back();
+    //stateTraj->pop_back();
+    for(int i = stateTraj->size() - 2; i >= 0; i --){
+        RobotSegment goalstate = stateTraj->at(i);
         checker = new BipedChecker(&grid, goalstate.robot_pos[0],
                                   goalstate.robot_pos[1], inflate_h, inflate_z);
         cout << "Moving from " << curstate.toString() << " to " << goalstate.toString() <<endl ;
@@ -117,7 +119,7 @@ void searchTrajectory(){
                                checker, maxDepth, viewDepth); //hardcoded r? TODO: fix
         bipedTrajectory.push_back(output);
         curstate = goalstate;
-        stateTraj->pop_back();
+        //stateTraj->pop_back();
     }
 }
 
@@ -153,6 +155,42 @@ void updateSearch() {
 
 }
 
+void drawInitialState(int x, int y, float theta){
+    //glClear(GL_COLOR_BUFFER_BIT);  
+    glPushMatrix();
+
+    glColor3ub(63,255,63);
+    glTranslated(x, y, 0);
+    gluDisk(quadric, 0, goalr, 32, 1);
+
+    glRotated(theta*180/M_PI, 0, 0, 1);
+    glBegin(GL_TRIANGLES);
+    glVertex2f(6, 0);
+    glVertex2f(0, 2);
+    glVertex2f(0, -2);
+    glEnd();
+
+    glPopMatrix();
+    //glFlush();
+}
+
+void drawGoalState(int x, int y, float theta){
+    glClear(GL_COLOR_BUFFER_BIT);  
+    glPushMatrix();
+    glColor3ub(255,63,63);
+    glTranslated(x, y, 0);
+    gluDisk(quadric, 0, goalr, 32, 1);
+    
+    glRotated(theta*180/M_PI, 0, 0, 1);
+    glBegin(GL_TRIANGLES);
+    glVertex2f(6, 0);
+    glVertex2f(0, 2);
+    glVertex2f(0, -2);
+    glEnd();
+    glPopMatrix();
+    glFlush();
+}
+
 void draw(const biped* b, bool recurse) { 
 
   if (!b) { return; }
@@ -185,7 +223,6 @@ void draw(const biped* b, bool recurse) {
 }
 
 void drawInputSegments(){
-
     glClear(GL_COLOR_BUFFER_BIT);  
     glColor3f(0.0,0.0,0.0); 
     glPointSize(3.0);
@@ -233,7 +270,7 @@ void display() {
   glEnd();
   glDisable(GL_TEXTURE_2D);
 
-  if (valid(init)) {
+  /*if (valid(init)) {
     glPushMatrix();
 
     glColor3ub(63,255,63);
@@ -249,18 +286,20 @@ void display() {
 
     glPopMatrix();
 
-  }
+  }*/
 
-  if (valid(goal)) {
+  /*if (valid(goal)) {
     glPushMatrix();
     glColor3ub(255,63,63);
     glTranslated(goal.x(), goal.y(), 0);
     gluDisk(quadric, 0, goalr, 32, 1);
     glPopMatrix();
-  }
+  }*/
   
   drawInputSegments();
   for(int i = 0; i < bipedTrajectory.size(); i++){
+    RobotSegment curstate = stateTraj->at(i);
+    drawInitialState(curstate.robot_pos[0], curstate.robot_pos[1], curstate.theta);
     draw(bipedTrajectory[i], true);
   }
   //draw(searchResult, true);

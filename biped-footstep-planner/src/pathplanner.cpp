@@ -72,11 +72,11 @@ float euclideanDistance(Point2d p1, Point2d p2){
 
 
 //is theta_new within the semicircle which is at theta degrees
-bool isAngleWithinSemicircle(float theta, float theta_new){
+/*bool isAngleWithinSemicircle(float theta, float theta_new){
     //cout << "checking if " << theta_new << " is within semicircle with angle " << theta << endl;
     //return ((theta_new > theta - PI - epsilon) && (theta_new < theta + epsilon));
     return true;
-}
+}*/
 
 bool KinSpace::isPointReachable(Point2d goal, Point2d position, float theta) const{
     Point2d goal_t = goal - position; //goal translated so position is origin
@@ -94,13 +94,14 @@ bool KinSpace::isPointReachable(Point2d goal, Point2d position, float theta) con
     Point2d origin = position;//-center; //had center in case there is an offset from
                                          //the robot position and the end effector
     //cout << "Distance from goal to origin: " << euclideanDistance(goal_t, origin) <<endl;
-    if(euclideanDistance(goal_t, origin) < radius){
+    return euclideanDistance(goal_t, origin) < radius;
+    /*if(euclideanDistance(goal_t, origin) < radius){
         //TODO: add left/right-handedness check
         //find angle of the vector made by goal in world
         float theta_new = atan2(goal_t[0], goal_t[1]);
         return isAngleWithinSemicircle(theta, theta_new);
     }
-    return false;
+    return false;*/
 }
 
 //Constructors
@@ -137,7 +138,7 @@ Point2d PathPlanner::getPenPosfromCOM(Point2d com) const{
 //helper function to give angle of line
 float lineAngle(Line line){
     Point2d difference = line.p2 - line.p1;
-    return atan2(difference[0], difference[1]);
+    return atan2(difference[1], difference[0]);
 }
 
 Point2d getLineMidpoint(Line segment){
@@ -169,7 +170,7 @@ void PathPlanner::populateTrajectory(){
     //determines position of robot
     cur_state = RobotSegment();
     cur_state.robot_pos = getCOMfromPenPos(line_segments.back().p1);
-    cur_state.theta = lineAngle(Line(cur_state.robot_pos, line_segments.back().p1)) + 2*epsilon;
+    cur_state.theta = lineAngle(line_segments.back());
     
     while (line_segments.size() != 0){
         Line cur_seg = line_segments.back();
@@ -185,7 +186,6 @@ void PathPlanner::populateTrajectory(){
         
     }
 }
-
 
 void PathPlanner::pushCurrentState(Point2d robot_pos, float theta, Line stroke){
     state_traj.push_back(RobotSegment(robot_pos, theta, stroke));
@@ -301,7 +301,7 @@ Point2d PathPlanner::findFarthestReachablePoint(Point2d origin,
 //cutSegment: Slice off a piece of line_segments based on size of workspace
 //curpos: current position of the robot
 //Modifies line_segments
-bool PathPlanner::cutSegmentOld(const Line cur_seg, Line& output,
+/*bool PathPlanner::cutSegmentOld(const Line cur_seg, Line& output,
                              const Point2d curpos){
     Point2d p1 = cur_seg.p1;
     Point2d p2 = cur_seg.p2;
@@ -315,11 +315,11 @@ bool PathPlanner::cutSegmentOld(const Line cur_seg, Line& output,
         output = cur_seg;
         return true;
     }
-    /*if( !p1_reachable ){ //just switch p1 and p2 here
+    if( !p1_reachable ){ //just switch p1 and p2 here
         Point2d temp = p1;
         p1 = p2;
         p2 = temp;
-    }*/
+    }
     if( p1_reachable || p2_reachable){
         //cut a slice
         Point2d p2_new = findFarthestReachablePoint(p1, cur_seg);
@@ -330,4 +330,4 @@ bool PathPlanner::cutSegmentOld(const Line cur_seg, Line& output,
     }
     //if neither reachable, we need to walk more
     return false;
-}
+}*/
