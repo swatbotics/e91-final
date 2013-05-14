@@ -111,13 +111,13 @@ PathPlanner::PathPlanner(){
     //line_segments = new vector<Line, lineAllocator>();
 }
 
-PathPlanner::PathPlanner(vector<Line, lineAllocator> segments){
+PathPlanner::PathPlanner(const vector<Line, lineAllocator> segments){
     PathPlanner();
     line_segments = segments;
 }
 
 //Public methods
-void PathPlanner::setInputSegments(vector<Line, lineAllocator> segments){
+void PathPlanner::setInputSegments(const vector<Line, lineAllocator> segments){
     line_segments = segments;
 }
 
@@ -241,7 +241,6 @@ Point2d PathPlanner::findFarthestReachablePoint(Point2d origin,
     float p  = cur_state.robot_pos[0]; //+ workspace.center[0];
     float q  = cur_state.robot_pos[1]; //+ workspace.center[1];
     float r  = workspace.radius - epsilon; //epsilon is safety factor
-    float theta = cur_state.theta;
     if(x1==x2){
         Point2d point;
         if (y2-y1 >= 0){
@@ -264,6 +263,7 @@ Point2d PathPlanner::findFarthestReachablePoint(Point2d origin,
     if(eval < 0){
         //line not reachable
         cout << "quadratic equation failed" <<endl;
+        cout << "Current robot state: " << cur_state.toString() << endl;
         throw myLineUnreachableException;
     }
     if(eval == 0){
@@ -277,16 +277,13 @@ Point2d PathPlanner::findFarthestReachablePoint(Point2d origin,
     x1 = (-B+sqrt(eval))/(2*A);
     x2 = (-B-sqrt(eval))/(2*A);
     Point2d point1 = Point2d(x1, m*x1+c);
-    float theta_1 = atan2(point1[0], point1[1]);
     Point2d point2 = Point2d(x2, m*x2+c);
-    float theta_2 = atan2(point2[0], point2[1]);
+    //float theta_2 = atan2(point2[0], point2[1]);
     //cout << "got point1: " << pointToString(point1) <<endl;
     //cout << "got point2: " << pointToString(point2) <<endl;
     if (! isnan(x1) || ! isnan(x2) ){
         if(isPointWithinSegment(point1, cur_seg) ){
         //TODO: is this the correct quadrant of the circle anyway?
-        //FIXME: we are getting points that are not on the original line
-        //SEGMENT but ARE on the line.
             //cout << "returning farthest reachable point :" << pointToString(point1)<<endl;
             return point1;
         }
@@ -296,7 +293,7 @@ Point2d PathPlanner::findFarthestReachablePoint(Point2d origin,
         }
     }
 
-    //TODO: we should rotate a bit here
+    //TODO: we should rotate a bit here?
     cout << "ya herped when ya should'a derped" << endl;
     throw myLineUnreachableException;
 }

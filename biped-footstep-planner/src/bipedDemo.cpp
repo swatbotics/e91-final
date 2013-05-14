@@ -49,6 +49,7 @@ GLUquadric* quadric = 0;
 
 PathPlanner planner;
 vector<biped*> bipedTrajectory;
+SegmentList segments;
 
 enum MouseAction {
   MouseNone,
@@ -86,11 +87,10 @@ bool valid(const vec2i& p) {
 }
 
 void getInputSegments(){
-    SegmentList segments;
-    segments.push_back(Line(20, 5, 20, 25)); //TODO: real input
-    segments.push_back(Line(20, 25, 40, 25)); 
-    segments.push_back(Line(40, 25, 40, 5)); 
-    segments.push_back(Line(40, 5, 20, 5)); 
+    segments.push_back(Line(20, 5, 20, 45)); //TODO: real input
+    segments.push_back(Line(20, 45, 60, 45)); 
+    segments.push_back(Line(60, 45, 60, 5));
+    segments.push_back(Line(60, 5, 20, 5)); 
     planner = PathPlanner(segments);
     planner.populateTrajectory();
     StateTrajectory* traj = planner.getPathTrajectory();
@@ -184,6 +184,22 @@ void draw(const biped* b, bool recurse) {
   
 }
 
+void drawInputSegments(){
+
+    glClear(GL_COLOR_BUFFER_BIT);  
+    glColor3f(0.0,0.0,0.0); 
+    glPointSize(3.0);
+
+    cout << segments.size() << endl;
+    for (int i = 0; i < segments.size(); i++){
+        glBegin(GL_LINES);
+        glVertex2d(segments[i].p1[0], segments[i].p1[1]);
+        glVertex2d(segments[i].p2[0], segments[i].p2[1]);
+        glEnd();
+        glFlush();
+    }
+}
+
 void drawString(int x, int y, const std::string& str, void* 
                 font=GLUT_BITMAP_8_BY_13) {
   
@@ -215,7 +231,6 @@ void display() {
   glVertex2f(grid.nx(), grid.ny());
 
   glEnd();
-
   glDisable(GL_TEXTURE_2D);
 
   if (valid(init)) {
@@ -244,6 +259,7 @@ void display() {
     glPopMatrix();
   }
   
+  drawInputSegments();
   for(int i = 0; i < bipedTrajectory.size(); i++){
     draw(bipedTrajectory[i], true);
   }
@@ -537,6 +553,15 @@ int main(int argc, char** argv) {
   glutMotionFunc(motion);
   
   glClearColor(1,1,1,1);
+
+  glViewport(0, 0, 640, 480); 
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+
+  glOrtho(0, 640, 0, 480, 1, -1);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
 
   glGenTextures(1, &grid_texture);
   glBindTexture(GL_TEXTURE_2D, grid_texture);

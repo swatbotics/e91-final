@@ -25,7 +25,7 @@ typedef Eigen::aligned_allocator<Vector6d> stateAllocator;
 
 const Point2d safety = Point2d(-0.02, -0.02);
 const float epsilon = 0.05;
-const float default_radius = 30;
+const float default_radius = 50;
 const float delta = default_radius*0.8;
 const float centerx = 0;
 const float centery = 0;
@@ -127,8 +127,8 @@ public:
 
     /****************Functions****************/
     PathPlanner();
-    PathPlanner(std::vector<Line, lineAllocator> segments);
-    void setInputSegments(std::vector<Line, lineAllocator> segments);
+    PathPlanner(const std::vector<Line, lineAllocator> segments);
+    void setInputSegments(const std::vector<Line, lineAllocator> segments);
     //std::vector<PathState, stateAllocator>* getPathTrajectory();
     StateTrajectory* getPathTrajectory();
     void populateTrajectory(); //fill in the PathState objects
