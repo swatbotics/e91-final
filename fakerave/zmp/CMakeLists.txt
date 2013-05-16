@@ -1,6 +1,9 @@
 add_library(hubozmp zmpwalkgenerator.cpp footprint.cpp gait-timer.cpp swing.cpp)
 
 
+include_directories(${PROJECT_SOURCE_DIR}/darwin/Framework/include)
+include_directories(${PROJECT_SOURCE_DIR}/darwin/Linux/include)
+
 add_gui_app(zmpdemo zmpdemo.cpp)
 add_executable(swingtest swing-test.cpp)
 add_executable(footprintdemo footprint-example.cpp)
@@ -8,7 +11,7 @@ add_executable(gait-timer-test gait-timer-test.cpp)
 
 
 set(zmpdemo_libs hubozmp fakerave mzcommon 
-  ${OPENGL_LIBRARY} ${GLUT_LIBRARY} expat)
+  ${OPENGL_LIBRARY} ${GLUT_LIBRARY} expat darwin)
 
 
 if (${HAVE_HUBO_ACH})

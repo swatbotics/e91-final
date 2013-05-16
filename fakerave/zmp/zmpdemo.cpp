@@ -10,6 +10,17 @@
 
 #include "Darwin.h"
 
+#include <stdio.h>
+#include <math.h>
+#include <sys/time.h>
+#include <algorithm>
+#include "MotionStatus.h"
+#include "Kinematics.h"
+#include "LinuxCM730.h"
+#include "MotionManager.h"
+#include "LinuxMotionTimer.h"
+#include "Body.h"
+
 using namespace fakerave;
 
 typedef std::vector< zmp_traj_element_t > TrajVector;
@@ -353,7 +364,7 @@ void usage(std::ostream& ostr) {
     "OPTIONS:\n"
     "\n"
     "  -g, --show-gui                    Show a GUI after computing trajectories.\n"
-    "  -A, --use-ach                     Send trajectory via ACH after computing.\n"
+    "  -A, --run-darwin                  Actually run on the Darwin.\n"
     "  -I, --ik-errors                   IK error handling: strict/sloppy\n"
     "  -w, --walk-type                   Set type: canned/line/circle\n"
     "  -D, --walk-distance               Set maximum distance to walk\n"
@@ -433,6 +444,71 @@ ZMPWalkGenerator::ik_error_sensitivity getiksense(const std::string& s) {
   }
 }
 
+double getTimeAsDouble() {
+  struct timeval tp;
+  gettimeofday(&tp, NULL);
+  return tp.tv_sec + 1e-6*tp.tv_usec;
+}
+
+void runTrajectoryDarwin(const std::vector<ZMPReferenceContext>& traj) {
+
+  using namespace Robot;
+
+  std::cout << "TODO!\n";
+
+  LinuxCM730* linux_cm730 = new LinuxCM730("/dev/ttyUSB0");
+  CM730* cm730 = new CM730(linux_cm730);
+  if(MotionManager::GetInstance()->Initialize(cm730) == false) {
+    std::cout<<"Fail to initialize Motion Manager!\n";
+    exit(1);
+  }
+
+  Robot::Body* thebody = Robot::Body::GetInstance();
+  JointData& jdata = thebody->m_Joint;
+
+  MotionManager::GetInstance()->AddModule(thebody);	
+  LinuxMotionTimer *motion_timer = new LinuxMotionTimer(MotionManager::GetInstance());
+  motion_timer->Start();
+
+  MotionManager::GetInstance()->SetEnable(true);
+  for (int i=1; i<=20; i++){
+    // Don't initialize to zero, initialize to whatever was in the dag
+    // trajecctory
+    jdata.SetRadian(i, traj.front().state.jvalues[i-1]);
+    jdata.SetEnable(i,true,true);
+  }
+
+  // Get ready to put me down
+  sleep(2);
+
+  double start = getTimeAsDouble();
+  size_t t = 0;
+
+  while (t < traj.size()) {
+
+    // Grab the current joint angles
+    const RealArray& jvalues = traj[t].state.jvalues;
+    
+    assert(jvalues.size() == 20);
+
+    for (size_t j=0; j<jvalues.size(); ++j) {
+
+      // Joints start getting indexed at 1 by JointData class (dumb)
+      jdata.SetRadian(j+1, jvalues[j]);
+      
+    }
+
+    // Now update the timestep by looking at current time.
+    double elapsed = getTimeAsDouble() - start;
+
+    t = seconds_to_ticks(elapsed);
+      
+
+  }
+
+
+}
+
 int main(int argc, char** argv) {
 
   if (argc < 2) {
@@ -442,7 +518,7 @@ int main(int argc, char** argv) {
 
 
   bool show_gui = false;
-  bool use_ach = false;
+  bool run_darwin = false;
 
   walktype walk_type = walk_canned;
   double walk_circle_radius = 5.0;
@@ -477,7 +553,7 @@ int main(int argc, char** argv) {
 
   const struct option long_options[] = {
     { "show-gui",            no_argument,       0, 'g' },
-    { "use-ach",             no_argument,       0, 'A' },
+    { "run-darwin",          no_argument,       0, 'A' },
     { "ik-errors",           required_argument, 0, 'I' },
     { "walk-type",           required_argument, 0, 'w' },
     { "walk-distance",       required_argument, 0, 'D' },
@@ -509,7 +585,7 @@ int main(int argc, char** argv) {
   while ( (opt = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1 ) {
     switch (opt) {
     case 'g': show_gui = true; break;
-    case 'A': use_ach = true; break;
+    case 'A': run_darwin = true; break;
     case 'I': ik_sense = getiksense(optarg); break;
     case 'w': walk_type = getwalktype(optarg); break;
     case 'D': walk_dist = getdouble(optarg); break;
@@ -717,36 +793,18 @@ int main(int argc, char** argv) {
   walker.bakeIt();
   // validateOutputData(traj);
 
-#ifdef HAVE_HUBO_ACH
-
-  if (use_ach) {
-    ach_channel_t zmp_chan;
-    ach_open( &zmp_chan, HUBO_CHAN_ZMP_TRAJ_NAME, NULL );
-
-    zmp_traj_t trajectory;
-    memset( &trajectory, 0, sizeof(trajectory) );
-
-    int N;
-    if( (int)walker.traj.size() > MAX_TRAJ_SIZE )
-      N = MAX_TRAJ_SIZE;
-    else
-      N = (int)walker.traj.size();
-
-    trajectory.count = N;
-    for(int i=0; i<N; i++)
-      memcpy( &(trajectory.traj[i]), &(walker.traj[i]), sizeof(zmp_traj_element_t) );
-
-    ach_put( &zmp_chan, &trajectory, sizeof(trajectory) );
-    fprintf(stdout, "Message put\n");
-  }
-
-#endif
 
   if (show_gui) {
 
     ZmpDemo demo(argc, argv, biped, walker.traj);
 
     demo.run();
+
+  } 
+
+  if (run_darwin) {
+
+    runTrajectoryDarwin(walker.ref);
 
   }
 
