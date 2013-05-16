@@ -4,7 +4,7 @@
 #include "fakerave.h"
 #include "hubo-zmp.h"
 #include "gait-timer.h"
-#include "HuboPlus.h"
+#include "Biped.h"
 
 
 
@@ -15,14 +15,14 @@ using namespace fakerave;
 class ZMPReferenceContext {
 public:
     stance_t stance; // single/double, left/right
-    HuboPlus::IKMode ikMode[4]; // current IK settings for each limb
+    Biped::IKMode ikMode[4]; // current IK settings for each limb
 
     Transform3 feet[2]; // or footprint i dont care
     Eigen::Vector3d comX, comY; // pos/vel/accel of each 
     double eX, eY; // integrator error for zmp controller
     double pX, pY; // where is the desired ZMP right now?
     
-    HuboPlus::KState state; // complete state of the robot
+    Biped::KState state; // complete state of the robot
 };
 
 
@@ -39,7 +39,7 @@ public:
     
   };
 
-    ZMPWalkGenerator(HuboPlus& _hplus,
+    ZMPWalkGenerator(Biped& _biped,
 		     ik_error_sensitivity ik_sense,
                      double com_height,
                      double zmp_R,
@@ -54,7 +54,7 @@ public:
 		     double lookahead_time
         );
     
-    const HuboPlus& hplus;
+    const Biped& biped;
 
     ik_error_sensitivity ik_sense;
     double com_height;

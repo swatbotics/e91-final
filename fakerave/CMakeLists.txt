@@ -7,6 +7,6 @@ add_subdirectory(src)
 
 include_directories(src)
 
-#add_subdirectory(zmp)
+add_subdirectory(zmp)
 
 

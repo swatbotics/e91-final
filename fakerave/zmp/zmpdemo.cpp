@@ -1,5 +1,5 @@
 #include "hubo-zmp.h"
-#include <HuboPlus.h>
+//#include <HuboPlus.h>
 #include <math.h>
 #include <mzcommon/MzGlutApp.h>
 #include <mzcommon/TimeUtil.h>
@@ -7,6 +7,8 @@
 
 #include "zmpwalkgenerator.h"
 #include "footprint.h"
+
+#include "Darwin.h"
 
 using namespace fakerave;
 
@@ -31,10 +33,10 @@ const stance_t next_stance_table[4] = {
 class ZmpDemo: public MzGlutApp {
 public:
 
-  HuboPlus& hplus;
+  Biped& biped;
   KinBody& kbody;
 
-  HuboPlus::KState state;
+  Biped::KState state;
   vec3 forces[2];
   vec3 torques[2];
   vec3 actualCom;
@@ -54,10 +56,10 @@ public:
 
   bool animating;
 
-  ZmpDemo(int argc, char** argv, HuboPlus& h, const TrajVector& t):
+  ZmpDemo(int argc, char** argv, Biped& b, const TrajVector& t):
     MzGlutApp(argc, argv, GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGB | GLUT_MULTISAMPLE),
-    hplus(h),
-    kbody(h.kbody),
+    biped(b),
+    kbody(b.kbody),
     traj(t),
     cur_index(-1)
 
@@ -107,8 +109,8 @@ public:
   
   void setStateFromTraj(const zmp_traj_element_t& cur) {
     
-    for (size_t hi=0; hi<hplus.huboJointOrder.size(); ++hi) {
-      size_t ji = hplus.huboJointOrder[hi];
+    for (size_t hi=0; hi<biped.jointOrder.size(); ++hi) {
+      size_t ji = biped.jointOrder[hi];
       if (ji != size_t(-1)) {
       	state.jvalues[ji] = cur.angles[hi];
       }
@@ -185,17 +187,17 @@ public:
     glPushMatrix();
     glstuff::mult_transform(state.xform());
 
-    hplus.render(xforms);
+    biped.render(xforms);
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    hplus.kbody.renderSkeleton(xforms, quadric);
+    biped.kbody.renderSkeleton(xforms, quadric);
 
     // Force and torque arrows
     for (int f=0; f<2; ++f) {
-      Transform3 fk = hplus.kbody.manipulatorFK(xforms, f);
+      Transform3 fk = biped.kbody.manipulatorFK(xforms, f);
       glPushMatrix();
       glstuff::mult_transform(fk);
-      glTranslated(0, 0, hplus.footAnkleDist);
+      glTranslated(0, 0, biped.footAnkleDist);
       double fscl = 1.0/400;
       glColor3ub(255,255,0);
       glstuff::draw_arrow(quadric, vec3(0), fscl*forces[f], 0.02);
@@ -214,7 +216,7 @@ public:
     // CoM sphere
     glColor3ub(255, 0, 255);
     glPushMatrix();
-    glTranslated(actualCom[0], actualCom[1], actualCom[2]+hplus.footAnkleDist);
+    glTranslated(actualCom[0], actualCom[1], actualCom[2]+biped.footAnkleDist);
     gluSphere(quadric, 0.05, 32, 24);
     glPopMatrix();
 
@@ -230,7 +232,7 @@ public:
     // Acceleration arrow
     double fscl = 1.0/2.0;
     glPushMatrix();
-    glTranslated(actualCom[0], actualCom[1], actualCom[2]+hplus.footAnkleDist);
+    glTranslated(actualCom[0], actualCom[1], actualCom[2]+biped.footAnkleDist);
     glColor3ub(0, 255, 0);
     glstuff::draw_arrow(quadric, vec3(0), fscl*actualComAcc, 0.02);
     glPopMatrix();
@@ -446,13 +448,15 @@ int main(int argc, char** argv) {
   double walk_circle_radius = 5.0;
   double walk_dist = 20;
 
-  double footsep_y = 0.085; // half of horizontal separation distance between feet
-  double foot_liftoff_z = 0.05; // foot liftoff height
+  // ran Darwin with -c 10 -y 0.037 -z 0.02 -l 0.04 -h 0.19 -g 
 
-  double step_length = 0.05;
+  double footsep_y = 0.037; // half of horizontal separation distance between feet
+  double foot_liftoff_z = 0.02; // foot liftoff height
+
+  double step_length = 0.04;
   bool walk_sideways = false;
 
-  double com_height = 0.48; // height of COM above ANKLE
+  double com_height = 0.19; // height of COM above ANKLE
   double com_ik_ascl = 0;
 
   double zmpoff_y = 0; // lateral displacement between zmp and ankle
@@ -463,7 +467,7 @@ int main(int argc, char** argv) {
   double startup_time = 1.0;
   double shutdown_time = 1.0;
   double double_support_time = 0.05;
-  double single_support_time = 0.70;
+  double single_support_time = 0.30;
 
   size_t max_step_count = 4;
 
@@ -531,30 +535,30 @@ int main(int argc, char** argv) {
   }
 
 
-  const char* hubofile = 0;
+  const char* bipedfile = 0;
   while (optind < argc) {
-    if (!hubofile) {
-      hubofile = argv[optind++];
+    if (!bipedfile) {
+      bipedfile = argv[optind++];
     } else {
       std::cerr << "Error: extra arguments on command line.\n\n";
       usage(std::cerr);
       exit(1);
     }
   }
-  if (!hubofile) { 
-    std::cerr << "Please supply a huboplus file!\n\n";
+  if (!bipedfile) { 
+    std::cerr << "Please supply a biped file!\n\n";
     usage(std::cerr); 
     exit(1); 
   }
-
-  HuboPlus hplus(hubofile);
-
+  
+  //Hubo biped(bipedfile);
+  Darwin biped(bipedfile);
 
   //////////////////////////////////////////////////////////////////////
   // build initial state
 
   // the actual state
-  ZMPWalkGenerator walker(hplus,
+  ZMPWalkGenerator walker(biped,
 			  ik_sense,
                           com_height,
                           zmp_jerk_penalty,
@@ -571,21 +575,27 @@ int main(int argc, char** argv) {
   ZMPReferenceContext initContext;
 
   // helper variables and classes
-  const KinBody& kbody = hplus.kbody;
-  const JointLookup& jl = hplus.jl;
+  const KinBody& kbody = biped.kbody;
+  const JointLookup& jl = biped.jl;
   double deg = M_PI/180; // for converting from degrees to radians
+
+  std::cout << "GOT " << biped.kbody.joints.size() << " JOINTS!\n";
 
   // fill in the kstate
   initContext.state.body_pos = vec3(0, 0, 0.85);
   initContext.state.body_rot = quat();
   initContext.state.jvalues.resize(kbody.joints.size(), 0.0);
-  initContext.state.jvalues[jl("LSR")] =  15*deg;
-  initContext.state.jvalues[jl("RSR")] = -15*deg;
-  initContext.state.jvalues[jl("LSP")] =  20*deg;
-  initContext.state.jvalues[jl("RSP")] =  20*deg;
-  initContext.state.jvalues[jl("LEP")] = -40*deg;
-  initContext.state.jvalues[jl("REP")] = -40*deg;
-  
+
+
+  if (0) {
+    initContext.state.jvalues[jl("LSR")] =  15*deg;
+    initContext.state.jvalues[jl("RSR")] = -15*deg;
+    initContext.state.jvalues[jl("LSP")] =  20*deg;
+    initContext.state.jvalues[jl("RSP")] =  20*deg;
+    initContext.state.jvalues[jl("LEP")] = -40*deg;
+    initContext.state.jvalues[jl("REP")] = -40*deg;
+  }
+
   // build and fill in the initial foot positions
 
   Transform3 starting_location(quat::fromAxisAngle(vec3(0,0,1), 0));
@@ -734,7 +744,7 @@ int main(int argc, char** argv) {
 
   if (show_gui) {
 
-    ZmpDemo demo(argc, argv, hplus, walker.traj);
+    ZmpDemo demo(argc, argv, biped, walker.traj);
 
     demo.run();
 

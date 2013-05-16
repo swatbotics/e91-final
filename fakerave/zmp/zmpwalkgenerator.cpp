@@ -1,10 +1,11 @@
 #include "ZmpPreview.h"
-#include "HuboPlus.h"
 #include "zmpwalkgenerator.h"
 #include "gait-timer.h"
 #include "swing.h"
+#include "Biped.h"
 
-ZMPWalkGenerator::ZMPWalkGenerator(HuboPlus& _hplus,
+
+ZMPWalkGenerator::ZMPWalkGenerator(/*HuboPlus& _hplus,*/ Biped& _biped,
 				   ik_error_sensitivity ik_sense,
                                    double com_height,
                                    double zmp_R,
@@ -17,7 +18,7 @@ ZMPWalkGenerator::ZMPWalkGenerator(HuboPlus& _hplus,
                                    double walk_shutdown_time,
                                    double step_height,
 				   double lookahead_time) :
-    hplus(_hplus),
+    biped(_biped),
     ik_sense(ik_sense),
     com_height(com_height),
     zmp_R(zmp_R),
@@ -342,7 +343,7 @@ void ZMPWalkGenerator::applyComIK(ZMPReferenceContext& cur) {
 
   // set up target positions
   Transform3 desired[4] = {cur.feet[0], cur.feet[1], Transform3(), Transform3()};
-  vec3 desiredCom = vec3(cur.comX[0], cur.comY[0], com_height + hplus.footAnkleDist);
+  vec3 desiredCom = vec3(cur.comX[0], cur.comY[0], com_height + biped.footAnkleDist);
   // My guess, and why I changed it from addition to
   // subtraction: the bottom of the foot is footAnkleDist away
   // from the "end" of the end effector, so to get our actual
@@ -354,10 +355,10 @@ void ZMPWalkGenerator::applyComIK(ZMPReferenceContext& cur) {
   // set up mode
   // single right is the only time the left foot is raised and vice versa
   // TODO: find a way to cut out the HuboPlus junk, it's unsightly
-  cur.ikMode[HuboPlus::MANIP_L_FOOT] = (cur.stance == SINGLE_RIGHT) ? HuboPlus::IK_MODE_WORLD : HuboPlus::IK_MODE_SUPPORT;
-  cur.ikMode[HuboPlus::MANIP_R_FOOT] = (cur.stance == SINGLE_LEFT) ? HuboPlus::IK_MODE_WORLD : HuboPlus::IK_MODE_SUPPORT;
-  cur.ikMode[HuboPlus::MANIP_L_HAND] = HuboPlus::IK_MODE_FIXED;
-  cur.ikMode[HuboPlus::MANIP_R_HAND] = HuboPlus::IK_MODE_FIXED;
+  cur.ikMode[Biped::MANIP_L_FOOT] = (cur.stance == SINGLE_RIGHT) ? Biped::IK_MODE_WORLD : Biped::IK_MODE_SUPPORT;
+  cur.ikMode[Biped::MANIP_R_FOOT] = (cur.stance == SINGLE_LEFT) ? Biped::IK_MODE_WORLD : Biped::IK_MODE_SUPPORT;
+  cur.ikMode[Biped::MANIP_L_HAND] = Biped::IK_MODE_FIXED;
+  cur.ikMode[Biped::MANIP_R_HAND] = Biped::IK_MODE_FIXED;
 
   // only moving left foot in current code
 
@@ -365,11 +366,11 @@ void ZMPWalkGenerator::applyComIK(ZMPReferenceContext& cur) {
   bool ikvalid[4];
 
   // and run IK. Everything we need goes straight into cur.state! cool.
-  bool ok = hplus.comIK(cur.state,
+  bool ok = biped.comIK(cur.state,
 			desiredCom,
 			desired,
 			cur.ikMode,
-			HuboPlus::noGlobalIK(),
+			Biped::noGlobalIK(),
 			body_transforms,
 			com_ik_angle_weight,
 			0,
@@ -378,27 +379,27 @@ void ZMPWalkGenerator::applyComIK(ZMPReferenceContext& cur) {
   // TODO freak out if not ok
   if (ik_sense != ik_sloppy && !ok) {
 
-    hplus.kbody.transforms(initContext.state.jvalues, body_transforms);
+    //biped.kbody.transforms(initContext.state.jvalues, body_transforms);
     Transform3 actual[4];
     vec3 dp[4], dq[4];
-    hplus.kbody.transforms(cur.state.jvalues, body_transforms);
-    vec3 actualCom = cur.state.xform() * hplus.kbody.com(body_transforms);
+    biped.kbody.transforms(cur.state.jvalues, body_transforms);
+    vec3 actualCom = cur.state.xform() * biped.kbody.com(body_transforms);
 
-    bool permissive_ok = (actualCom - desiredCom).norm() < hplus.DEFAULT_COM_PTOL;
+    bool permissive_ok = (actualCom - desiredCom).norm() < biped.DEFAULT_COM_PTOL;
 
     // loop through legs and arms to calculate results
     for (int i=0; i<4; ++i) {
 
       // are we in world or supporting?
-      if (cur.ikMode[i] != HuboPlus::IK_MODE_FIXED &&
-	  cur.ikMode[i] != HuboPlus::IK_MODE_FREE) {
+      if (cur.ikMode[i] != Biped::IK_MODE_FIXED &&
+	  cur.ikMode[i] != Biped::IK_MODE_FREE) {
 
 	// get the FK for the manipulator
-	actual[i] = hplus.kbody.manipulatorFK(body_transforms, i);
+	actual[i] = biped.kbody.manipulatorFK(body_transforms, i);
 
 	// if relative to world, offset
-	if (cur.ikMode[i] == HuboPlus::IK_MODE_WORLD ||
-	    cur.ikMode[i] == HuboPlus::IK_MODE_SUPPORT) {
+	if (cur.ikMode[i] == Biped::IK_MODE_WORLD ||
+	    cur.ikMode[i] == Biped::IK_MODE_SUPPORT) {
 	  actual[i] = cur.state.xform() * actual[i];
 	}
 
@@ -410,7 +411,7 @@ void ZMPWalkGenerator::applyComIK(ZMPReferenceContext& cur) {
 	  // TODO: hacky - this hardcodes distance tolerances
 
 	  if ( ! ( ik_sense == ik_swing_permissive &&
-		   cur.ikMode[i] == HuboPlus::IK_MODE_WORLD &&
+		   cur.ikMode[i] == Biped::IK_MODE_WORLD &&
 		   desired[i].translation().z() > 0.03 &&
 		   dp[i].norm() < 0.002 &&
 		   dq[i].norm() < 4 * M_PI/180) ) {
@@ -432,10 +433,10 @@ void ZMPWalkGenerator::applyComIK(ZMPReferenceContext& cur) {
       std::cerr << "  desired com: " << desiredCom << "\n";
       std::cerr << "  actual com:  " << actualCom << "\n\n";
       for (int i=0; i<4; ++i) {
-	if (cur.ikMode[i] != HuboPlus::IK_MODE_FIXED &&
-	    cur.ikMode[i] != HuboPlus::IK_MODE_FREE) {
-	  std::cerr << "  " << hplus.kbody.manipulators[i].name << ":\n";
-	  std::cerr << "    mode:    " << HuboPlus::ikModeString(cur.ikMode[i]) << "\n";
+	if (cur.ikMode[i] != Biped::IK_MODE_FIXED &&
+	    cur.ikMode[i] != Biped::IK_MODE_FREE) {
+	  std::cerr << "  " << biped.kbody.manipulators[i].name << ":\n";
+	  std::cerr << "    mode:    " << Biped::ikModeString(cur.ikMode[i]) << "\n";
 	  std::cerr << "    valid:   " << ikvalid[i] << "\n";
 	  std::cerr << "    desired: " << desired[i] << "\n";
 	  std::cerr << "    actual:  " << actual[i] << "\n";
@@ -478,9 +479,9 @@ void ZMPWalkGenerator::refToTraj(const ZMPReferenceContext& cur_ref,
   cur_out.stance = cur_ref.stance;
 
   // copy joint angles from reference to output
-  for (size_t phys_i=0; phys_i < hplus.huboJointOrder.size(); phys_i++) {
+  for (size_t phys_i=0; phys_i < biped.jointOrder.size(); phys_i++) {
     // map simulation joint number to physical joint number
-    size_t sim_i = hplus.huboJointOrder[phys_i];
+    size_t sim_i = biped.jointOrder[phys_i];
     if (sim_i != size_t(-1)) { // if it's valid, copy
       cur_out.angles[phys_i] = cur_ref.state.jvalues[sim_i];
     }
@@ -491,7 +492,7 @@ void ZMPWalkGenerator::refToTraj(const ZMPReferenceContext& cur_ref,
   vec3 torques[2];
   Transform3 desired[4] = {cur_ref.feet[0], cur_ref.feet[1], Transform3(), Transform3()};
   // compute ground reaction forces and torques
-  hplus.computeGroundReaction( vec3(cur_ref.comX(0), cur_ref.comY(0), com_height), // com position, we hope
+  biped.computeGroundReaction( vec3(cur_ref.comX(0), cur_ref.comY(0), com_height), // com position, we hope
 			       vec3(cur_ref.comX(2), cur_ref.comY(2), 0), // com acceleration
 			       desired, // foot locations
 			       cur_ref.ikMode, // foot modes

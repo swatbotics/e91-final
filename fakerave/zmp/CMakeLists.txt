@@ -7,7 +7,8 @@ add_executable(footprintdemo footprint-example.cpp)
 add_executable(gait-timer-test gait-timer-test.cpp)
 
 
-set(zmpdemo_libs hubozmp hubomz mzcommon ${OPENGL_LIBRARY} ${GLUT_LIBRARY} expat)
+set(zmpdemo_libs hubozmp fakerave mzcommon 
+  ${OPENGL_LIBRARY} ${GLUT_LIBRARY} expat)
 
 
 if (${HAVE_HUBO_ACH})
