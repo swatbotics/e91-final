@@ -16,6 +16,7 @@ set(src_files
   ../../Framework/src/motion/modules/Action.cpp 
   ../../Framework/src/motion/modules/Head.cpp   
   ../../Framework/src/motion/modules/Walking.cpp
+  ../../Framework/src/motion/modules/Body.cpp
   ../../Framework/src/vision/BallFollower.cpp   
   ../../Framework/src/vision/BallTracker.cpp    
   ../../Framework/src/vision/Camera.cpp
