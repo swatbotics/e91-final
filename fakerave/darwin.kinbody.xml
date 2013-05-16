@@ -1,0 +1,38 @@
+<kinbody name="mzucker_darwin">
+
+  <kinbody file="darwin/darwin.xml">
+  </kinbody>
+
+  <Manipulator name="leftFootManip">
+    <effector>DFOOTL_LINK</effector>
+    <base>base</base>
+    <translation>0 -0.0335 0</translation>
+    <rotationaxis>0 1 0 -90</rotationaxis>
+    <rotationaxis>0 0 1 -90</rotationaxis>
+  </Manipulator>
+
+  <Manipulator name="rightFootManip">
+    <effector>DFOOTR_LINK</effector>
+    <base>base</base>
+    <translation>0 -0.0335 0</translation>
+    <rotationaxis>0 1 0 -90</rotationaxis>
+    <rotationaxis>0 0 1 -90</rotationaxis>
+  </Manipulator>
+
+  <Manipulator name="leftHandManip">
+    <effector>DARMLOWERL_LINK</effector>
+    <base>base</base>
+    <translation>0.0067 -0.11 -0.0135</translation>
+    <rotationaxis>0 0 1 90</rotationaxis>
+    <rotationaxis>1 0 0 90</rotationaxis>
+  </Manipulator>
+
+  <Manipulator name="rightHandManip">
+    <effector>DARMLOWERR_LINK</effector>
+    <base>base</base>
+    <translation>-0.0067 -0.11 -0.0135</translation>
+    <rotationaxis>0 0 1 90</rotationaxis>
+    <rotationaxis>1 0 0 90</rotationaxis>
+  </Manipulator>
+
+</kinbody>

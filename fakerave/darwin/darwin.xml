@@ -1,0 +1,421 @@
+<kinbody name="darwin">
+  <modelsdir>models</modelsdir>
+  <body name="base" type="dynamic"></body>
+  <body name="DBODY_LINK" type="dynamic">
+    <offsetfrom>base</offsetfrom>
+    <translation>0 0 0.33951</translation>
+    <rotationaxis>0.57735 0.57735 0.57735 120</rotationaxis>
+    <geom type="trimesh">
+      <data>g1_0_geom0.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.975599</total>
+      <com>-0.003116 -0.039444 -0.019663</com>
+    </mass>
+  </body>
+  <body name="DNECK_LINK" type="dynamic">
+    <offsetfrom>DBODY_LINK</offsetfrom>
+    <translation>0 0.051 0</translation>
+    <geom type="trimesh">
+      <data>g1_1_geom0.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.024358</total>
+      <com>0.001424 -0.016568 -0.000713</com>
+    </mass>
+  </body>
+  <body name="DHEAD_LINK" type="dynamic">
+    <offsetfrom>DNECK_LINK</offsetfrom>
+    <rotationaxis>1 0 0 45.0001</rotationaxis>
+    <geom type="trimesh">
+      <data>g1_2_geom0.obj 1</data>
+    </geom>
+    <geom type="trimesh">
+      <data>g1_2_geom1.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.158042</total>
+      <com>6.39198e-05 0.018564 0.007667</com>
+    </mass>
+  </body>
+  <body name="DPELVYL_LINK" type="dynamic">
+    <offsetfrom>DBODY_LINK</offsetfrom>
+    <translation>0.037 -0.1222 -0.005</translation>
+    <geom type="trimesh">
+      <data>g1_3_geom0.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.027069</total>
+      <com>0 0.018437 0.00048</com>
+    </mass>
+  </body>
+  <body name="DPELVL_LINK" type="dynamic">
+    <offsetfrom>DPELVYL_LINK</offsetfrom>
+    <geom type="trimesh">
+      <data>g1_4_geom0.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.167108</total>
+      <com>7.99828e-05 -0.013873 -0.018242</com>
+    </mass>
+  </body>
+  <body name="DLEGUPPERL_LINK" type="dynamic">
+    <offsetfrom>DPELVL_LINK</offsetfrom>
+    <geom type="trimesh">
+      <data>g1_5_geom0.obj 1</data>
+    </geom>
+    <geom type="trimesh">
+      <data>g1_5_geom1.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.119043</total>
+      <com>-0.000323 -0.062965 0.000692</com>
+    </mass>
+  </body>
+  <body name="DLEGLOWERL_LINK" type="dynamic">
+    <offsetfrom>DLEGUPPERL_LINK</offsetfrom>
+    <translation>0 -0.093 0</translation>
+    <geom type="trimesh">
+      <data>g1_6_geom0.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.07031</total>
+      <com>-0.000592 -0.039045 0.006548</com>
+    </mass>
+  </body>
+  <body name="DANKLEL_LINK" type="dynamic">
+    <offsetfrom>DLEGLOWERL_LINK</offsetfrom>
+    <translation>0 -0.093 0</translation>
+    <geom type="trimesh">
+      <data>g1_7_geom0.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.167108</total>
+      <com>-0.000214 0.013873 -0.018536</com>
+    </mass>
+  </body>
+  <body name="DFOOTL_LINK" type="dynamic">
+    <offsetfrom>DANKLEL_LINK</offsetfrom>
+    <geom type="trimesh">
+      <data>g1_8_geom0.obj 1</data>
+    </geom>
+    <geom type="trimesh">
+      <data>g1_8_geom1.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.079446</total>
+      <com>0.009506 -0.025995 -0.000503</com>
+    </mass>
+  </body>
+  <body name="DPELVYR_LINK" type="dynamic">
+    <offsetfrom>DBODY_LINK</offsetfrom>
+    <translation>-0.037 -0.1222 -0.005</translation>
+    <geom type="trimesh">
+      <data>g1_9_geom0.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.027069</total>
+      <com>0 0.018437 0.00048</com>
+    </mass>
+  </body>
+  <body name="DPELVR_LINK" type="dynamic">
+    <offsetfrom>DPELVYR_LINK</offsetfrom>
+    <geom type="trimesh">
+      <data>g1_10_geom0.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.167108</total>
+      <com>-7.99828e-05 -0.013873 -0.018242</com>
+    </mass>
+  </body>
+  <body name="DLEGUPPERR_LINK" type="dynamic">
+    <offsetfrom>DPELVR_LINK</offsetfrom>
+    <geom type="trimesh">
+      <data>g1_11_geom0.obj 1</data>
+    </geom>
+    <geom type="trimesh">
+      <data>g1_11_geom1.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.119043</total>
+      <com>0.000323 -0.062965 0.000692</com>
+    </mass>
+  </body>
+  <body name="DLEGLOWERR_LINK" type="dynamic">
+    <offsetfrom>DLEGUPPERR_LINK</offsetfrom>
+    <translation>0 -0.093 0</translation>
+    <geom type="trimesh">
+      <data>g1_12_geom0.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.07031</total>
+      <com>0.000592 -0.039045 0.006548</com>
+    </mass>
+  </body>
+  <body name="DANKLER_LINK" type="dynamic">
+    <offsetfrom>DLEGLOWERR_LINK</offsetfrom>
+    <translation>0 -0.093 0</translation>
+    <geom type="trimesh">
+      <data>g1_13_geom0.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.167108</total>
+      <com>0.000214 0.013873 -0.018536</com>
+    </mass>
+  </body>
+  <body name="DFOOTR_LINK" type="dynamic">
+    <offsetfrom>DANKLER_LINK</offsetfrom>
+    <geom type="trimesh">
+      <data>g1_14_geom0.obj 1</data>
+    </geom>
+    <geom type="trimesh">
+      <data>g1_14_geom1.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.079446</total>
+      <com>-0.009506 -0.025995 -0.000503</com>
+    </mass>
+  </body>
+  <body name="DSHOULDERL_LINK" type="dynamic">
+    <offsetfrom>DBODY_LINK</offsetfrom>
+    <translation>0.082 0 0</translation>
+    <geom type="trimesh">
+      <data>g1_15_geom0.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.025913</total>
+      <com>-0.013523 -0.005736 0.001394</com>
+    </mass>
+  </body>
+  <body name="DARMUPPERL_LINK" type="dynamic">
+    <offsetfrom>DSHOULDERL_LINK</offsetfrom>
+    <translation>0 -0.016 0</translation>
+    <rotationaxis>0 0 1 45.0001</rotationaxis>
+    <geom type="trimesh">
+      <data>g1_16_geom0.obj 1</data>
+    </geom>
+    <geom type="trimesh">
+      <data>g1_16_geom1.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.168377</total>
+      <com>0.00066 -0.036239 0.000734</com>
+    </mass>
+  </body>
+  <body name="DARMLOWERL_LINK" type="dynamic">
+    <offsetfrom>DARMUPPERL_LINK</offsetfrom>
+    <translation>0 -0.06 0.016</translation>
+    <rotationaxis>-1 0 0 90</rotationaxis>
+    <geom type="trimesh">
+      <data>g1_17_geom0.obj 1</data>
+    </geom>
+    <geom type="trimesh">
+      <data>g1_17_geom1.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.059288</total>
+      <com>0.006666 -0.045838 -0.01349</com>
+    </mass>
+  </body>
+  <body name="DSHOULDERR_LINK" type="dynamic">
+    <offsetfrom>DBODY_LINK</offsetfrom>
+    <translation>-0.082 0 0</translation>
+    <geom type="trimesh">
+      <data>g1_18_geom0.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.025913</total>
+      <com>0.013523 -0.005736 0.001394</com>
+    </mass>
+  </body>
+  <body name="DARMUPPERR_LINK" type="dynamic">
+    <offsetfrom>DSHOULDERR_LINK</offsetfrom>
+    <translation>0 -0.016 0</translation>
+    <rotationaxis>0 0 -1 45.0001</rotationaxis>
+    <geom type="trimesh">
+      <data>g1_19_geom0.obj 1</data>
+    </geom>
+    <geom type="trimesh">
+      <data>g1_19_geom1.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.168377</total>
+      <com>-0.00066 -0.036239 0.000734</com>
+    </mass>
+  </body>
+  <body name="DARMLOWERR_LINK" type="dynamic">
+    <offsetfrom>DARMUPPERR_LINK</offsetfrom>
+    <translation>0 -0.06 0.016</translation>
+    <rotationaxis>-1 0 0 90</rotationaxis>
+    <geom type="trimesh">
+      <data>g1_20_geom0.obj 1</data>
+    </geom>
+    <geom type="trimesh">
+      <data>g1_20_geom1.obj 1</data>
+    </geom>
+    <mass type="custom">
+      <total>0.059288</total>
+      <com>-0.006666 -0.045838 -0.01349</com>
+    </mass>
+  </body>
+  <Joint name="DNECK" type="hinge">
+    <body>DBODY_LINK</body>
+    <body>DNECK_LINK</body>
+    <offsetfrom>DBODY_LINK</offsetfrom>
+    <anchor>0 0.051 0</anchor>
+    <axis>0 1 0</axis>
+    <limitsdeg>-90 90</limitsdeg>
+  </Joint>
+  <Joint name="DHEAD" type="hinge">
+    <body>DNECK_LINK</body>
+    <body>DHEAD_LINK</body>
+    <offsetfrom>DNECK_LINK</offsetfrom>
+    <anchor>0 0 0</anchor>
+    <axis>-1 0 0</axis>
+    <limitsdeg>-25 55</limitsdeg>
+  </Joint>
+  <Joint name="DPELVYL" type="hinge">
+    <body>DBODY_LINK</body>
+    <body>DPELVYL_LINK</body>
+    <offsetfrom>DBODY_LINK</offsetfrom>
+    <anchor>0.037 -0.1222 -0.005</anchor>
+    <axis>0 -1 0</axis>
+    <limitsdeg>-90 30</limitsdeg>
+  </Joint>
+  <Joint name="DPELVL" type="hinge">
+    <body>DPELVYL_LINK</body>
+    <body>DPELVL_LINK</body>
+    <offsetfrom>DPELVYL_LINK</offsetfrom>
+    <anchor>0 0 0</anchor>
+    <axis>0 0 -1</axis>
+    <limitsdeg>-50 45</limitsdeg>
+  </Joint>
+  <Joint name="DLEGUPPERL" type="hinge">
+    <body>DPELVL_LINK</body>
+    <body>DLEGUPPERL_LINK</body>
+    <offsetfrom>DPELVL_LINK</offsetfrom>
+    <anchor>0 0 0</anchor>
+    <axis>-1 0 0</axis>
+    <limitsdeg>-30 90</limitsdeg>
+  </Joint>
+  <Joint name="DLEGLOWERL" type="hinge">
+    <body>DLEGUPPERL_LINK</body>
+    <body>DLEGLOWERL_LINK</body>
+    <offsetfrom>DLEGUPPERL_LINK</offsetfrom>
+    <anchor>0 -0.093 0</anchor>
+    <axis>-1 0 0</axis>
+    <limitsdeg>-85 0</limitsdeg>
+  </Joint>
+  <Joint name="DANKLEL" type="hinge">
+    <body>DLEGLOWERL_LINK</body>
+    <body>DANKLEL_LINK</body>
+    <offsetfrom>DLEGLOWERL_LINK</offsetfrom>
+    <anchor>0 -0.093 0</anchor>
+    <axis>1 0 0</axis>
+    <limitsdeg>-55 80</limitsdeg>
+  </Joint>
+  <Joint name="DFOOTL" type="hinge">
+    <body>DANKLEL_LINK</body>
+    <body>DFOOTL_LINK</body>
+    <offsetfrom>DANKLEL_LINK</offsetfrom>
+    <anchor>0 0 0</anchor>
+    <axis>0 0 1</axis>
+    <limitsdeg>-45 45</limitsdeg>
+  </Joint>
+  <Joint name="DPELVYR" type="hinge">
+    <body>DBODY_LINK</body>
+    <body>DPELVYR_LINK</body>
+    <offsetfrom>DBODY_LINK</offsetfrom>
+    <anchor>-0.037 -0.1222 -0.005</anchor>
+    <axis>0 -1 0</axis>
+    <limitsdeg>-30 90</limitsdeg>
+  </Joint>
+  <Joint name="DPELVR" type="hinge">
+    <body>DPELVYR_LINK</body>
+    <body>DPELVR_LINK</body>
+    <offsetfrom>DPELVYR_LINK</offsetfrom>
+    <anchor>0 0 0</anchor>
+    <axis>0 0 -1</axis>
+    <limitsdeg>-45 50</limitsdeg>
+  </Joint>
+  <Joint name="DLEGUPPERR" type="hinge">
+    <body>DPELVR_LINK</body>
+    <body>DLEGUPPERR_LINK</body>
+    <offsetfrom>DPELVR_LINK</offsetfrom>
+    <anchor>0 0 0</anchor>
+    <axis>1 0 0</axis>
+    <limitsdeg>-90 30</limitsdeg>
+  </Joint>
+  <Joint name="DLEGLOWERR" type="hinge">
+    <body>DLEGUPPERR_LINK</body>
+    <body>DLEGLOWERR_LINK</body>
+    <offsetfrom>DLEGUPPERR_LINK</offsetfrom>
+    <anchor>0 -0.093 0</anchor>
+    <axis>1 0 0</axis>
+    <limitsdeg>0 85</limitsdeg>
+  </Joint>
+  <Joint name="DANKLER" type="hinge">
+    <body>DLEGLOWERR_LINK</body>
+    <body>DANKLER_LINK</body>
+    <offsetfrom>DLEGLOWERR_LINK</offsetfrom>
+    <anchor>0 -0.093 0</anchor>
+    <axis>-1 0 0</axis>
+    <limitsdeg>-55 80</limitsdeg>
+  </Joint>
+  <Joint name="DFOOTR" type="hinge">
+    <body>DANKLER_LINK</body>
+    <body>DFOOTR_LINK</body>
+    <offsetfrom>DANKLER_LINK</offsetfrom>
+    <anchor>0 0 0</anchor>
+    <axis>0 0 1</axis>
+    <limitsdeg>-45 45</limitsdeg>
+  </Joint>
+  <Joint name="DSHOULDERL" type="hinge">
+    <body>DBODY_LINK</body>
+    <body>DSHOULDERL_LINK</body>
+    <offsetfrom>DBODY_LINK</offsetfrom>
+    <anchor>0.082 0 0</anchor>
+    <axis>1 0 0</axis>
+    <limitsdeg>-180 180</limitsdeg>
+  </Joint>
+  <Joint name="DARMUPPERL" type="hinge">
+    <body>DSHOULDERL_LINK</body>
+    <body>DARMUPPERL_LINK</body>
+    <offsetfrom>DSHOULDERL_LINK</offsetfrom>
+    <anchor>0 -0.016 0</anchor>
+    <axis>0 0 -1</axis>
+    <limitsdeg>-130 45</limitsdeg>
+  </Joint>
+  <Joint name="DARMLOWERL" type="hinge">
+    <body>DARMUPPERL_LINK</body>
+    <body>DARMLOWERL_LINK</body>
+    <offsetfrom>DARMUPPERL_LINK</offsetfrom>
+    <anchor>0 -0.06 0.016</anchor>
+    <axis>1 0 0</axis>
+    <limitsdeg>-70 90</limitsdeg>
+  </Joint>
+  <Joint name="DSHOULDERR" type="hinge">
+    <body>DBODY_LINK</body>
+    <body>DSHOULDERR_LINK</body>
+    <offsetfrom>DBODY_LINK</offsetfrom>
+    <anchor>-0.082 0 0</anchor>
+    <axis>-1 0 0</axis>
+    <limitsdeg>-180 180</limitsdeg>
+  </Joint>
+  <Joint name="DARMUPPERR" type="hinge">
+    <body>DSHOULDERR_LINK</body>
+    <body>DARMUPPERR_LINK</body>
+    <offsetfrom>DSHOULDERR_LINK</offsetfrom>
+    <anchor>0 -0.016 0</anchor>
+    <axis>0 0 -1</axis>
+    <limitsdeg>-45 130</limitsdeg>
+  </Joint>
+  <Joint name="DARMLOWERR" type="hinge">
+    <body>DARMUPPERR_LINK</body>
+    <body>DARMLOWERR_LINK</body>
+    <offsetfrom>DARMUPPERR_LINK</offsetfrom>
+    <anchor>0 -0.06 0.016</anchor>
+    <axis>-1 0 0</axis>
+    <limitsdeg>-90 70</limitsdeg>
+  </Joint>
+</kinbody>
