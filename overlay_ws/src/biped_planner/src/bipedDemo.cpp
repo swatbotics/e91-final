@@ -88,11 +88,11 @@ bool valid(const vec2i& p) {
 }
 
 void getInputSegments(){
-    /*segments.push_back(Line(20, 45, 60, 45)); 
-    segments.push_back(Line(20, 5, 20, 45)); //TODO: real input
+    segments.push_back(Line(20, 55, 60, 55)); 
+    segments.push_back(Line(20, 5, 20, 55)); //TODO: real input
     segments.push_back(Line(60, 5, 20, 5)); 
-    segments.push_back(Line(60, 45, 60, 5));*/
-    segments.push_back(Line(20, 5, 40, 63));
+    segments.push_back(Line(60, 55, 60, 5));
+    //segments.push_back(Line(20, 5, 40, 63));
     
     planner = PathPlanner(segments);
     planner.populateTrajectory();

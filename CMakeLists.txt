@@ -46,6 +46,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 #add_subdirectory(april)
 add_subdirectory(darwin)
 
+add_subdirectory(fakerave)
+
 #if (NOT APPLE)
 #add_subdirectory(ptpd)
 #endif (NOT APPLE)
