@@ -2,6 +2,9 @@
 #include "std_msgs/String.h"
 #include "bipedSearch.h"
 #include "pathplanner.h"
+#include <biped_planner/RobotSegment.h>
+#include <biped_planner/Footstep.h>
+#include <biped_planner/Line.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -20,6 +23,7 @@ int viewDepth = 30;
 using namespace cv;
 using namespace std;
 
+ros::NodeHandle n;
 //wrapper that combines PathPlanner and bipedSearch
 class BipedPlanner{
     PathPlanner planner;
@@ -32,15 +36,19 @@ class BipedPlanner{
 
     biped* searchResult;
 
+    biped_planner::RobotSegment curseg;
     //GLUquadric* quadric;
     
     public:
-    
+
+
     BipedPlanner(){
         //quadric = 0;
         searchResult=0;
         checker=0;
+        //TODO: throw in real topic name
     }
+
 
     void initializeSegments(char* filename){
         Mat image;
@@ -73,9 +81,15 @@ class BipedPlanner{
             cout << traj->at(i).toString() << endl;
         }
     }
+
+    biped_planner::RobotSegment getCurrentSegment(){
+        return curseg;
+    }
+
     biped* getCurrentBiped(){
         return bipedTrajectory.back();
     }
+
     biped* popBiped(){
         biped* out = getCurrentBiped();
         bipedTrajectory.pop_back();
@@ -103,6 +117,17 @@ class BipedPlanner{
 
 };
 
+    
+//TODO: fill RobotSegment object
+void updateSegment(const std_msgs::String::ConstPtr& msg){
+    biped_planner::RobotSegment out;
+    biped_planner::Footstep fstep;
+    //fstep.
+
+    //curseg.stroke = ;
+    //curseg.footsteps = ;
+    //curseg = out;
+}
 
 int main(int argc, char ** argv){
     BipedPlanner bPlanner;
@@ -116,9 +141,15 @@ int main(int argc, char ** argv){
 
     ros::init(argc, argv, "biped_planner");
 
-    ros::NodeHandle n;
-    ros::Publisher pub = n.advertise<std_msgs::String>("plan", 1000);
-    ros::Rate loop_rate(10);
+    ros::Subscriber sub = n.subscribe("herpaderp", 1000, updateSegment);
+    ros::Publisher pub = n.advertise<biped_planner::RobotSegment>(
+                                                "current_segment", 1000);
 
-    ros::spin();
+    //bPlanner.setSubscriber(sub);
+    ros::Rate loop_rate(10);
+    while(ros::ok()){
+
+        pub.publish(bPlanner.getCurrentSegment());
+        ros::spinOnce();
+    }
 }
